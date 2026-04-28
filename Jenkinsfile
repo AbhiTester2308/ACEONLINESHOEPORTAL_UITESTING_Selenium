@@ -11,20 +11,9 @@ agent any
  steps{
  echo 'Starting Selenium Grid containers...'
  bat 'docker compose -f docker-compose.yaml up -d'
+
  echo 'Waiting for Selenium Grid to be ready...'
- bat """
- powershell -NoProfile -Command ^
-  "$u='http://localhost:4444/status'; ^
-   for($i=0;$i -lt 60;$i++){ ^
-     try{ ^
-       $r=Invoke-RestMethod -TimeoutSec 2 $u; ^
-       if($r.value.ready -eq $true){ exit 0 } ^
-     } catch{} ^
-     Start-Sleep -Seconds 2 ^
-   } ^
-   Write-Host 'Selenium Grid not ready in time'; ^
-   exit 1"
- """
+ bat 'powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\wait-selenium-grid.ps1'
  }
  }
  stage('Test'){

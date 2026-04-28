@@ -20,30 +20,11 @@ public class ConfigReader {
     }
 
     public String getBrowser(){
-        return getOverride("browser", "BROWSER");
+        return prop.getProperty("browser");
     }
 
     public String getUrl(){
-        return getOverride("url", "APP_URL");
+        return prop.getProperty("url");
     }
 
-    public String getSeleniumRemoteUrl() {
-        String sys = System.getProperty("selenium.remote.url");
-        if (sys != null && !sys.isBlank()) return sys;
-
-        String env = System.getenv("SELENIUM_REMOTE_URL");
-        if (env != null && !env.isBlank()) return env;
-
-        return prop.getProperty("selenium.remote.url");
-    }
-
-    private String getOverride(String propertyKey, String envKey) {
-        String sys = System.getProperty(propertyKey);
-        if (sys != null && !sys.isBlank()) return sys;
-
-        String env = System.getenv(envKey);
-        if (env != null && !env.isBlank()) return env;
-
-        return prop.getProperty(propertyKey);
-    }
 }
