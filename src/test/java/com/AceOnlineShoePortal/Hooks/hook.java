@@ -21,5 +21,3 @@ public class hook extends BrowserSetUp{
 
 }
 
-
-//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git push -u origin main

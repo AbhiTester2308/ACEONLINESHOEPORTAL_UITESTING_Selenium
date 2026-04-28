@@ -11,6 +11,8 @@ agent any
  steps{
  echo 'Starting Selenium Grid containers...'
  bat 'docker compose -f docker-compose.yaml up -d'
+ echo 'Docker compose status (after up):'
+ bat 'docker compose -f docker-compose.yaml ps'
 
  echo 'Waiting for Selenium Grid to be ready...'
  bat 'powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\wait-selenium-grid.ps1'
@@ -31,6 +33,8 @@ agent any
 }
  post{
    always{
+     echo 'Docker compose status (before down):'
+     bat 'docker compose -f docker-compose.yaml ps'
      echo 'Stopping Selenium Grid containers...'
      bat 'docker compose -f docker-compose.yaml down --remove-orphans'
    }
