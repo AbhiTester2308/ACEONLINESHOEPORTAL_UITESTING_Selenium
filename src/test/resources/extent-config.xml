@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extentreports>
+    <configuration>
+        <theme>standard</theme>
+        <documentTitle>ACE_OnlineShoePortal_TestReport</documentTitle>
+        <reportName>ACE_OnlineShoePortal_TestReport</reportName>
+        <encoding>utf-8</encoding>
+        <timelineEnabled>true</timelineEnabled>
+    </configuration>
+</extentreports>
