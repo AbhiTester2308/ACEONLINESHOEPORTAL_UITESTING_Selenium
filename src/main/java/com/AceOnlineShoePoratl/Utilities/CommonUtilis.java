@@ -1,14 +1,26 @@
 package com.AceOnlineShoePoratl.Utilities;
 
-
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.util.Scanner;
-
-
+/**
+ * Backward-compatible access to driver/wait. Prefer {@link DriverManager} in new code.
+ */
 public class CommonUtilis {
 
     public static WebDriver driver;
-    static Scanner sc = new Scanner(System.in);
+    public static WebDriverWait wait;
 
+    private CommonUtilis() {
+    }
+
+    static void syncFromDriverManager() {
+        driver = DriverManager.getDriver();
+        wait = DriverManager.getWait();
+    }
+
+    static void clear() {
+        driver = null;
+        wait = null;
+    }
 }

@@ -9,25 +9,25 @@ Feature: User registration and login
 
   @registration @happy
   Scenario Outline: Successful user registration
-    When I navigate to the "Register" page
+    Given I navigate to the "Register" page
     And I register with details:
-      | First Name | Abhishek   |
-      | Last Name  | Chauhan  |
-      | Email      | acfvaley@gmail.com |
-      | Password   | 123456   |
-      | Confirm    |123456   |
+      | First Name | <first> |
+      | Last Name  | <last>  |
+      | Email      | <email> |
+      | Password   | <pass>  |
+      | Confirm    | <pass>  |
     And I submit the registration form
     Then I should see a registration success message "Account created" or similar
     And I should be redirected to "Login" page or be logged in
 
     Examples:
-      | first | last  | email                   | pass         |
-      | Alex  | Roy   | alex.roy+1@testmail.com | P@ssw0rd123! |
-      | Mira  | Das   | mira.das+2@testmail.com | P@ssw0rd123! |
+      | first | last | email                   | pass         |
+      | Alex  | Roy  | alex.roy+1@testmail.com | P@ssw0rd123! |
+      | Mira  | Das  | mira.das+2@testmail.com | P@ssw0rd123! |
 
   @registration @negative
   Scenario Outline: Registration validation errors
-    When I navigate to the "Register" page
+    Given I navigate to the "Register" page
     And I register with details:
       | First Name | <first> |
       | Last Name  | <last>  |
@@ -39,7 +39,7 @@ Feature: User registration and login
 
     Examples:
       | first | last | email              | pass       | confirm    | error                      |
-       | Alex   | Roy  | alex@test.com      | P@ssw0rd1! | P@ssw0rd1! | First Name is required     |
+      |       | Roy  | alex@test.com      | P@ssw0rd1! | P@ssw0rd1! | First Name is required     |
       | Alex  |      | alex@test.com      | P@ssw0rd1! | P@ssw0rd1! | Last Name is required      |
       | Alex  | Roy  | invalid-email      | P@ssw0rd1! | P@ssw0rd1! | Enter a valid email        |
       | Alex  | Roy  | alex@test.com      | short      | short      | Password strength          |

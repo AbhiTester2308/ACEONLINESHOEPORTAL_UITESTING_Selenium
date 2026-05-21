@@ -1,84 +1,75 @@
 package com.AceOnlineShoePortal.Stepdefinition;
 
-
-import io.cucumber.java.en.Given;
+import com.AceOnlineShoePoratl.Pages.AuthenticationFeaturePage;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.junit.Assert;
+
+import java.util.Map;
 
 public class AuthenticationFeatureTest {
-    private static final Logger log = LogManager.getLogger(AuthenticationFeatureTest.class);
 
-    @Given("I open the site {string}")
-    public void i_open_the_site(String string) {
+    private final AuthenticationFeaturePage authPage = new AuthenticationFeaturePage();
 
+    @And("I register with details:")
+    public void i_register_with_details(DataTable dataTable) {
+        Map<String, String> data = dataTable.asMap(String.class, String.class);
+        authPage.fillRegistration(
+                data.get("First Name"),
+                data.get("Last Name"),
+                data.get("Email"),
+                data.get("Password"),
+                data.get("Confirm")
+        );
     }
 
-    @When("I navigate to the {string} page")
-   /*public void i_navigate_to_the_page(String string) {
-
-    }*/
-
-    @When("I register with details:")
-    public void i_register_with_details(io.cucumber.datatable.DataTable dataTable) {
-        // For automatic transformation, change DataTable to one of
-        // E, List<E>, List<List<E>>, List<Map<K,V>>, Map<K,V> or
-        // Map<K, List<V>>. E,K,V must be a String, Integer, Float,
-        // Double, Byte, Short, Long, BigInteger or BigDecimal.
-        //
-        // For other transformations you can register a DataTableType.
-
-    }
-
-    @When("I submit the registration form")
-    public void i_submit_the_registration_form() {
-
+    @And("I submit the registration form")
+    public void i_submit_registration() {
+        authPage.submitRegistration();
     }
 
     @Then("I should see a registration success message {string} or similar")
-    public void i_should_see_a_registration_success_message_or_similar(String string) {
-
+    public void verify_registration_success(String expectedMsg) {
+        Assert.assertTrue(authPage.getRegistrationSuccessText().contains(expectedMsg));
     }
 
-    @Then("I should be redirected to {string} page or be logged in")
-    public void i_should_be_redirected_to_page_or_be_logged_in(String string) {
-
+    @And("I should be redirected to {string} page or be logged in")
+    public void verify_redirection(String page) {
+        String currentUrl = authPage.getCurrentUrl();
+        Assert.assertTrue(
+                currentUrl.toLowerCase().contains(page.toLowerCase()) || authPage.isLogoutDisplayed()
+        );
     }
 
     @Then("I should see a validation error containing {string}")
-    public void i_should_see_a_validation_error_containing(String string) {
-
-    }
-
-    @Given("I navigate to the {string} page")
-    public void i_navigate_to_the_page(String string) {
-
+    public void verify_validation_error(String error) {
+        Assert.assertTrue(authPage.getValidationErrorText().contains(error));
     }
 
     @When("I login with email {string} and password {string}")
-    public void i_login_with_email_and_password(String string, String string2) {
-
+    public void i_login_with(String email, String password) {
+        authPage.login(email, password);
     }
 
     @Then("I should see my user name or a welcome message")
-    public void i_should_see_my_user_name_or_a_welcome_message() {
-
+    public void verify_welcome_msg() {
+        Assert.assertFalse(authPage.getWelcomeMessage().isEmpty());
     }
 
-    @Then("the logout button should be visible")
-    public void the_logout_button_should_be_visible() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    @And("the logout button should be visible")
+    public void verify_logout_visible() {
+        Assert.assertTrue("Logout button should be visible", authPage.isLogoutDisplayed());
+    }
+
+    @And("the logout button should not be visible")
+    public void verify_logout_not_visible() {
+        Assert.assertFalse("Logout button should not be visible", authPage.isLogoutDisplayed());
     }
 
     @Then("I should see an authentication error {string}")
-    public void i_should_see_an_authentication_error(String string) {
-
-    }
-
-    @Then("the logout button should not be visible")
-    public void the_logout_button_should_not_be_visible() {
-
+    public void verify_login_error(String error) {
+        Assert.assertEquals(error, authPage.getLoginError());
     }
 }

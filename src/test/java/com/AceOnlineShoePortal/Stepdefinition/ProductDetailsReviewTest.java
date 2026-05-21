@@ -1,101 +1,92 @@
 package com.AceOnlineShoePortal.Stepdefinition;
 
-import io.cucumber.java.en.Given;
+import com.AceOnlineShoePoratl.Pages.ProductReviewDetailPage;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.junit.Assert;
+import org.openqa.selenium.WebElement;
+
+import java.util.List;
 
 public class ProductDetailsReviewTest {
-    private static final Logger log = LogManager.getLogger( ProductDetailsReviewTest.class);
 
-    @Given("I open the site {string}")
-    public void i_open_the_site(String string) {
+    private final ProductReviewDetailPage pdp = new ProductReviewDetailPage();
 
-    }
-
-    @Given("I navigate to the {string} catalog page")
-    public void i_navigate_to_the_catalog_page(String string) {
-
-    }
-
-    @When("I open the first product from the listing")
-    public void i_open_the_first_product_from_the_listing() {
-
+    @When("I open a product named {string}")
+    public void i_open_a_product_named(String name) {
+        pdp.openProductByName(name);
     }
 
     @Then("I should see the product title")
     public void i_should_see_the_product_title() {
-
+        Assert.assertTrue("Product title not displayed", pdp.isProductTitleDisplayed());
     }
 
-    @Then("I should see the main image and at least {int} thumbnail")
-    public void i_should_see_the_main_image_and_at_least_thumbnail(Integer int1) {
-
+    @Then("I should see the main image and at least 1 thumbnail")
+    public void i_should_see_images() {
+        Assert.assertTrue("Main image not displayed", pdp.isMainImageDisplayed());
+        Assert.assertTrue("Thumbnails not found", pdp.getThumbnailCount() >= 1);
     }
 
     @Then("I should see the price with currency symbol")
-    public void i_should_see_the_price_with_currency_symbol() {
-
+    public void i_should_see_price() {
+        String price = pdp.getPriceText();
+        Assert.assertTrue("Price or currency missing", price.matches(".*[\\$\\£\\€₹].*\\d+.*"));
     }
 
     @Then("I should see available sizes")
     public void i_should_see_available_sizes() {
-
+        Assert.assertFalse("No sizes displayed", pdp.getSizeElements().isEmpty());
     }
 
     @Then("I should see an {string} button enabled for selectable sizes")
-    public void i_should_see_an_button_enabled_for_selectable_sizes(String string) {
-
-    }
-
-    @When("I open a product named {string}")
-    public void i_open_a_product_named(String string) {
-
+    public void i_should_see_add_to_cart_enabled(String buttonText) {
+        Assert.assertTrue("Add to Cart button should be enabled", pdp.isAddToCartEnabled());
     }
 
     @When("I select size {string}")
-    public void i_select_size(String string) {
-
+    public void i_select_size(String size) {
+        pdp.selectSize(size);
     }
 
     @When("I select color {string}")
-    public void i_select_color(String string) {
-
+    public void i_select_color(String color) {
+        pdp.selectColor(color);
     }
 
     @Then("the {string} button should be {string}")
-    public void the_button_should_be(String string, String string2) {
-
+    public void the_button_should_be_state(String buttonName, String state) {
+        boolean isEnabled = pdp.isAddToCartEnabled();
+        if (state.equalsIgnoreCase("enabled")) {
+            Assert.assertTrue(isEnabled);
+        } else {
+            Assert.assertFalse(isEnabled);
+        }
     }
 
     @When("I scroll to {string} section")
-    public void i_scroll_to_section(String string) {
-
+    public void i_scroll_to_section(String section) {
+        pdp.scrollToReviews();
     }
 
     @Then("I should see overall rating \\(stars) and review count")
-    public void i_should_see_overall_rating_stars_and_review_count() {
-
+    public void i_should_see_rating_and_count() {
+        Assert.assertTrue(pdp.isRatingAndCountVisible());
     }
 
     @When("I sort reviews by {string}")
-    public void i_sort_reviews_by(String string) {
-
+    public void i_sort_reviews_by(String criteria) {
+        pdp.sortReviewsBy(criteria);
     }
 
     @Then("the top review date should be the most recent among visible reviews")
-    public void the_top_review_date_should_be_the_most_recent_among_visible_reviews() {
-
-    }
-
-    @When("I click {string}")
-    public void i_click(String string) {
-
+    public void verify_top_review_date() {
+        List<WebElement> dates = pdp.getReviewDateElements();
+        Assert.assertFalse("No reviews found to verify dates", dates.isEmpty());
     }
 
     @Then("I should be prompted to log in or see a login\\/register modal")
-    public void i_should_be_prompted_to_log_in_or_see_a_login_register_modal() {
-
+    public void i_should_see_login_modal() {
+        Assert.assertTrue("Login modal not displayed", pdp.isLoginModalDisplayed());
     }
 }

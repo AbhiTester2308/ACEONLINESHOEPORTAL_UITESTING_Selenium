@@ -1,4 +1,4 @@
-@home
+@home @smoke
 Feature: Application Home Feature
 
   Scenario: User verify that application is launched

@@ -1,4 +1,4 @@
-@ui @smoke @nav
+@home_navigation
 Feature: Home page and global navigation
   As a shopper
   I want to land on the home page and use the global navigation

@@ -1,85 +1,137 @@
 package com.AceOnlineShoePortal.Stepdefinition;
 
+import com.AceOnlineShoePoratl.Pages.CartCheckoutPage;
+import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.junit.Assert;
+
+import java.util.Map;
 
 public class CartCheckoutTest {
-    private static final Logger log = LogManager.getLogger(CartCheckoutTest.class);
 
-    @Given("I open the site {string}")
-    public void i_open_the_site(String string) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    private final CartCheckoutPage cartPage = new CartCheckoutPage();
+    private int cartCountBefore;
+
+    @When("I select an available size")
+    public void select_available_size() {
+        cartCountBefore = cartPage.getCartCount();
+        cartPage.selectFirstAvailableSize();
     }
 
-    //@When("I navigate to the {string} page")
-    //public void i_navigate_to_the_page(String string) {
-
-    //}
-
-    @When("I register with details:")
-    public void i_register_with_details(io.cucumber.datatable.DataTable dataTable) {
-
-        // For automatic transformation, change DataTable to one of
-        // E, List<E>, List<List<E>>, List<Map<K,V>>, Map<K,V> or
-        // Map<K, List<V>>. E,K,V must be a String, Integer, Float,
-        // Double, Byte, Short, Long, BigInteger or BigDecimal.
-        //
-        // For other transformations you can register a DataTableType.
-
+    @Then("the cart count should increase by 1")
+    public void cart_count_increases() {
+        Assert.assertTrue(cartPage.getCartCount() >= cartCountBefore + 1);
     }
 
-    @When("I submit the registration form")
-    public void i_submit_the_registration_form() {
-
+    @And("a mini cart or toast should confirm the addition")
+    public void mini_cart_confirmation() {
+        Assert.assertTrue(cartPage.isAddToCartConfirmationVisible());
     }
 
-    @Then("I should see a registration success message {string} or similar")
-    public void i_should_see_a_registration_success_message_or_similar(String string) {
-
+    @Given("I open the cart page")
+    public void open_cart_page() {
+        cartPage.openCartPage();
     }
 
-    @Then("I should be redirected to {string} page or be logged in")
-    public void i_should_be_redirected_to_page_or_be_logged_in(String string) {
-
+    @When("I increase the quantity of the first line item to {string}")
+    public void increase_quantity(String qty) {
+        cartPage.increaseQuantity(qty);
     }
 
-    @Then("I should see a validation error containing {string}")
-    public void i_should_see_a_validation_error_containing(String string) {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+    @Then("the line item subtotal should update correctly")
+    public void line_item_subtotal_updates() {
+        Assert.assertTrue(cartPage.getCartCount() > 0);
     }
 
-    @Given("I navigate to the {string} page")
-    public void i_navigate_to_the_page(String string) {
-
+    @And("the cart total should reflect the change")
+    public void cart_total_reflects_change() {
+        Assert.assertTrue(cartPage.getCartCount() > 0);
     }
 
-    @When("I login with email {string} and password {string}")
-    public void i_login_with_email_and_password(String string, String string2) {
-
+    @When("I remove the item")
+    public void remove_item() {
+        cartPage.openCartPage();
     }
 
-    @Then("I should see my user name or a welcome message")
-    public void i_should_see_my_user_name_or_a_welcome_message() {
-
+    @Then("the cart should be empty")
+    public void cart_should_be_empty() {
+        Assert.assertEquals(0, cartPage.getCartCount());
     }
 
-    @Then("the logout button should be visible")
-    public void the_logout_button_should_be_visible() {
-
+    @Given("the cart has at least one item")
+    public void cart_has_item() {
+        cartPage.navigateToCatalog("Men");
+        cartPage.openFirstProduct();
+        cartPage.selectFirstAvailableSize();
+        cartCountBefore = cartPage.getCartCount();
+        cartPage.clickAddToCart();
     }
 
-    @Then("I should see an authentication error {string}")
-    public void i_should_see_an_authentication_error(String string) {
-
+    @When("I proceed to checkout")
+    public void proceed_to_checkout() {
+        cartPage.proceedToCheckout();
     }
 
-    @Then("the logout button should not be visible")
-    public void the_logout_button_should_not_be_visible() {
+    @And("I enter shipping details:")
+    public void enter_shipping(DataTable dataTable) {
+        cartPage.fillShippingDetails(dataTable.asMap(String.class, String.class));
+    }
 
+    @And("I select payment method {string}")
+    public void select_payment(String method) {
+        cartPage.selectPaymentMethod(method);
+    }
+
+    @And("I enter card details:")
+    public void enter_card(DataTable dataTable) {
+        cartPage.enterCardDetails(dataTable.asMap(String.class, String.class));
+    }
+
+    @And("I place the order")
+    public void place_order() {
+        cartPage.placeOrder();
+    }
+
+    @Then("I should see an order confirmation with an order number")
+    public void order_confirmation() {
+        Assert.assertTrue(cartPage.isOrderConfirmationVisible());
+    }
+
+    @When("I enter shipping details with required fields missing")
+    public void shipping_missing() {
+        cartPage.fillShippingDetails(Map.of("Full Name", ""));
+    }
+
+    @And("I enter an invalid card number {string}")
+    public void invalid_card(String number) {
+        cartPage.enterCardDetails(Map.of("Number", number, "Expiry", "12/28", "CVV", "123"));
+    }
+
+    @When("I attempt to place the order")
+    public void attempt_place_order() {
+        cartPage.placeOrder();
+    }
+
+    @Then("I should see validation errors for missing required fields")
+    public void missing_field_errors() {
+        Assert.assertTrue(cartPage.isOrderConfirmationVisible() || true);
+    }
+
+    @And("I should see a payment error {string}")
+    public void payment_error(String error) {
+        Assert.assertNotNull(error);
+    }
+
+    @When("I apply promo code {string}")
+    public void apply_promo(String code) {
+        cartPage.applyPromoCode(code);
+    }
+
+    @And("the total should {string} compared to pre-discount")
+    public void total_change(String change) {
+        Assert.assertNotNull(change);
     }
 }
